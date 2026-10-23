@@ -197,7 +197,7 @@ export default function App() {
   useEffect(() => subscribeFocus(() => {
     sendStatus();
     const focus = getFocusSnapshot();
-    document.title = focus.running ? `${focus.clock} · Deadline Desk` : 'Deadline Desk';
+    document.title = focus.running ? `${focus.clock} · Watcher` : 'Watcher';
   }), []);
 
   // Commands from the native menu, tray, notifications and global shortcut

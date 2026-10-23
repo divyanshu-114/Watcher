@@ -1,4 +1,4 @@
-# Deadline Desk
+# Watcher
 
 A desktop deadline planner built with Electron. Type tasks in plain English ("Submit essay fri 5pm !high #college"), get native reminders before they're due, plan your month on a drag-and-drop calendar, work through tasks with a built-in focus timer, and see your progress on an insights dashboard.
 

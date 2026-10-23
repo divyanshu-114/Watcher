@@ -1,5 +1,5 @@
 {
-  "name": "deadline-desk",
+  "name": "watcher",
   "version": "2.0.0",
   "description": "A desktop deadline planner with natural-language quick add, reminders, calendar, focus timer and insights. Built with Electron.",
   "main": "main.js",
@@ -22,8 +22,8 @@
     "vite": "^8.3.5"
   },
   "build": {
-    "appId": "com.deadlinedesk.app",
-    "productName": "Deadline Desk",
+    "appId": "com.watcher.app",
+    "productName": "Watcher",
     "files": [
       "main.js",
       "preload.js",

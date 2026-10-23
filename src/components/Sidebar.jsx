@@ -43,7 +43,7 @@ export default function Sidebar({ tasks, stats, now, view, onSelect, onFocus, on
     <aside className="sidebar">
       <div className="brand drag">
         <span className="brand-mark"><Icon name="logo" /></span>
-        <span className="brand-name">Deadline Desk</span>
+        <span className="brand-name">Watcher</span>
       </div>
 
       <div className="today-card">

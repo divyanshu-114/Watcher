@@ -2,6 +2,7 @@
 // Every change replaces the state object (never mutates it), so React re-renders through useSyncExternalStore.
 import { addDays, atTime, dayKey, parseDue, startOfDay, toLocalInput, END_OF_DAY } from './dates.js';
 
+const STORAGE_KEY = 'watcher-tasks';
 const LEGACY_STORAGE_KEY = 'deadline-desk-tasks';   // v1 kept tasks in localStorage
 const SCHEMA_VERSION = 2;
 
@@ -72,9 +73,9 @@ export async function load() {
     return { firstRun: false };
   }
 
-  // Migrate v1 data from localStorage, or seed example tasks on a brand-new install
+  // Migrate legacy data from localStorage, or seed example tasks on a brand-new install
   let legacy = null;
-  try { legacy = JSON.parse(localStorage.getItem(LEGACY_STORAGE_KEY)); } catch { /* ignore */ }
+  try { legacy = JSON.parse(localStorage.getItem(STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY)); } catch { /* ignore */ }
   setTasks(() => (Array.isArray(legacy) && legacy.length ? legacy.map(normalizeTask) : sampleTasks()));
   return { firstRun: true, migrated: !!legacy?.length };
 }
@@ -84,7 +85,7 @@ function sampleTasks() {
   const at = (days, time) => toLocalInput(atTime(addDays(now, days), time));
   const doneAgo = days => addDays(now, -days).toISOString();
   return [
-    { title: 'Welcome to Deadline Desk — click me for details', priority: 'medium', notes: 'Try the quick-add bar: type "Submit essay fri 5pm !high #college" and press Enter.\n\nShortcuts: N new task · ⌘K command palette · ⌘1–6 switch views · ? all shortcuts.', subtasks: [{ title: 'Add your first task', done: false }, { title: 'Start a focus session', done: false }, { title: 'Check out Insights', done: false }] },
+    { title: 'Welcome to Watcher — click me for details', priority: 'medium', notes: 'Try the quick-add bar: type "Submit essay fri 5pm !high #college" and press Enter.\n\nShortcuts: N new task · ⌘K command palette · ⌘1–6 switch views · ? all shortcuts.', subtasks: [{ title: 'Add your first task', done: false }, { title: 'Start a focus session', done: false }, { title: 'Check out Insights', done: false }] },
     { title: 'Submit DBMS assignment', due: at(0, '23:59'), priority: 'high', tags: ['college'] },
     { title: 'Prepare slides for project demo', due: at(1, '10:00'), priority: 'high', tags: ['college', 'project'], subtasks: [{ title: 'Outline', done: true }, { title: 'Screenshots', done: false }, { title: 'Rehearse', done: false }] },
     { title: 'Morning run', due: at(1, '07:00'), priority: 'low', tags: ['health'], repeat: 'daily' },
@@ -226,7 +227,7 @@ export function markNotified(id, ...which) {
 // Accepts a full backup ({ tasks, settings }) or a plain array of tasks. Skips tasks that already exist.
 export function importData(data) {
   const incoming = Array.isArray(data) ? data : data?.tasks;
-  if (!Array.isArray(incoming)) throw new Error('This file is not a Deadline Desk backup.');
+  if (!Array.isArray(incoming)) throw new Error('This file is not a Watcher backup.');
   const existing = new Set(state.tasks.map(t => t.id));
   const fresh = incoming.map(normalizeTask).filter(t => !existing.has(t.id));
   setState({
@@ -251,7 +252,7 @@ export function toCsv() {
   return [header, ...rows].map(r => r.map(cell).join(',')).join('\n');
 }
 
-export const toJson = () => JSON.stringify({ app: 'deadline-desk', version: SCHEMA_VERSION, exportedAt: new Date().toISOString(), ...state }, null, 2);
+export const toJson = () => JSON.stringify({ app: 'watcher', version: SCHEMA_VERSION, exportedAt: new Date().toISOString(), ...state }, null, 2);
 
 // ---------- Queries ----------
 

@@ -15,7 +15,8 @@ let trayState = { todayCount: 0, overdueCount: 0, upcoming: [], focusLabel: '' }
 
 // ---------- Storage (JSON file in the user's app-data folder) ----------
 
-const dataFile = () => path.join(app.getPath('userData'), 'deadline-desk.json');
+const dataFile = () => path.join(app.getPath('userData'), 'watcher.json');
+const legacyDataFile = () => path.join(app.getPath('userData'), 'deadline-desk.json');
 const windowStateFile = () => path.join(app.getPath('userData'), 'window-state.json');
 
 function readJson(file) {
@@ -45,7 +46,7 @@ function createWindow() {
     y: saved.y,
     minWidth: 760,
     minHeight: 540,
-    title: 'Deadline Desk',
+    title: 'Watcher',
     backgroundColor: '#17212e',
     icon: path.join(__dirname, 'assets', 'icon.png'),
     titleBarStyle: isMac ? 'hiddenInset' : 'default',
@@ -151,7 +152,7 @@ function createTray() {
   const icon = nativeImage.createFromPath(path.join(__dirname, 'assets', 'trayTemplate.png'));
   icon.setTemplateImage(true);   // macOS adapts it to light/dark menu bars
   tray = new Tray(icon);
-  tray.setToolTip('Deadline Desk');
+  tray.setToolTip('Watcher');
   tray.on('click', () => { if (!isMac) showWindow(); });
   updateTray();
 }
@@ -172,7 +173,7 @@ function updateTray() {
     { type: 'separator' },
     { label: 'Quick Add…', accelerator: QUICK_ADD_SHORTCUT, click: () => send('menu:new-task') },
     { label: 'Start Focus Session', click: () => send('menu:focus') },
-    { label: 'Open Deadline Desk', click: showWindow },
+    { label: 'Open Watcher', click: showWindow },
     { type: 'separator' },
     { role: 'quit' }
   ];
@@ -182,7 +183,13 @@ function updateTray() {
 // ---------- IPC handlers (called from preload.js) ----------
 
 function registerIpc() {
-  ipcMain.handle('data:load', () => readJson(dataFile()));
+  ipcMain.handle('data:load', () => {
+    const file = dataFile();
+    if (fs.existsSync(file)) return readJson(file);
+    const legacy = legacyDataFile();
+    if (fs.existsSync(legacy)) return readJson(legacy);
+    return null;
+  });
 
   ipcMain.handle('data:save', (_e, data) => {
     writeJsonAtomic(dataFile(), data);
@@ -193,7 +200,7 @@ function registerIpc() {
     const stamp = new Date().toISOString().slice(0, 10);
     const { canceled, filePath } = await dialog.showSaveDialog(win, {
       title: 'Export tasks',
-      defaultPath: `deadline-desk-${stamp}.${format}`,
+      defaultPath: `watcher-${stamp}.${format}`,
       filters: [format === 'csv'
         ? { name: 'CSV spreadsheet', extensions: ['csv'] }
         : { name: 'JSON backup', extensions: ['json'] }]
@@ -207,7 +214,7 @@ function registerIpc() {
     const { canceled, filePaths } = await dialog.showOpenDialog(win, {
       title: 'Import tasks',
       properties: ['openFile'],
-      filters: [{ name: 'Deadline Desk backup', extensions: ['json'] }]
+      filters: [{ name: 'Watcher backup', extensions: ['json'] }]
     });
     if (canceled || !filePaths.length) return null;
     return readJson(filePaths[0]);

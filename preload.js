@@ -8,7 +8,7 @@ const listen = channel => callback => {
   return () => ipcRenderer.removeListener(channel, handler);
 };
 
-contextBridge.exposeInMainWorld('desk', {
+const deskApi = {
   platform: process.platform,
 
   // Storage
@@ -32,4 +32,7 @@ contextBridge.exposeInMainWorld('desk', {
   onFocus: listen('menu:focus'),
   onShortcuts: listen('menu:shortcuts'),
   onOpenTask: listen('task:open')
-});
+};
+
+contextBridge.exposeInMainWorld('desk', deskApi);
+contextBridge.exposeInMainWorld('watcher', deskApi);
