@@ -1,0 +1,59 @@
+{
+  "name": "deadline-desk",
+  "version": "2.0.0",
+  "description": "A desktop deadline planner with natural-language quick add, reminders, calendar, focus timer and insights. Built with Electron.",
+  "main": "main.js",
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "build": "vite build",
+    "start": "vite build && electron .",
+    "test": "node --test tests/logic.test.mjs",
+    "pack": "vite build && electron-builder --dir",
+    "dist": "vite build && electron-builder"
+  },
+  "author": "YOUR NAME",
+  "license": "MIT",
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.1.2",
+    "electron": "^45.0.0",
+    "electron-builder": "^26.15.3",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "vite": "^8.3.5"
+  },
+  "build": {
+    "appId": "com.deadlinedesk.app",
+    "productName": "Deadline Desk",
+    "files": [
+      "main.js",
+      "preload.js",
+      "build/**/*",
+      "assets/**/*",
+      "package.json"
+    ],
+    "mac": {
+      "category": "public.app-category.productivity",
+      "icon": "assets/icon.png",
+      "target": [
+        "dmg",
+        "zip"
+      ]
+    },
+    "win": {
+      "icon": "assets/icon.png",
+      "target": [
+        "nsis"
+      ]
+    },
+    "linux": {
+      "icon": "assets/icon.png",
+      "target": [
+        "AppImage"
+      ],
+      "category": "Office"
+    },
+    "directories": {
+      "output": "dist"
+    }
+  }
+}
